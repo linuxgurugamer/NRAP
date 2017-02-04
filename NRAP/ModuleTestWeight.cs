@@ -199,6 +199,10 @@ namespace NRAP
             this.part.DragCubes.ResetCubeWeights();
         }
 
+        bool sizeNeedsUpdating = false;
+        int oldSize;
+        float oldHeight;
+
         private void Window(int id)
         {
             GUI.DragWindow(this.drag);
@@ -221,11 +225,12 @@ namespace NRAP
             if (GUILayout.Button("Apply", GUILayout.Width(60)))
             {
                 float m;
+                sizeNeedsUpdating = true;
                 if (float.TryParse(this.mass, out m) && NRAPUtils.CheckRange(m, this.minMass, this.maxMass))
                 {
                     this.deltaMass = m - this.part.partInfo.partPrefab.mass;
                     this.currentMass = this.part.TotalMass();
-                    GameEvents.onEditorShipModified.Fire(EditorLogic.fetch.ship);
+                    //  GameEvents.onEditorShipModified.Fire(EditorLogic.fetch.ship);
                 }
             }
             GUILayout.EndHorizontal();
@@ -235,6 +240,10 @@ namespace NRAP
             GUILayout.Label(builder.ToString());
             GUILayout.Space(10);
 
+            
+            oldSize = this.size;
+            oldHeight = this.height;
+
             GUILayout.Label($"Diameter (m): {{ {GetSize(this.size)}");
             this.size = (int)GUILayout.HorizontalSlider(this.size, 0, 4);
             this.width = GetSize(this.size) / this.baseDiameter;
@@ -242,10 +251,12 @@ namespace NRAP
             GUILayout.Label($"Height multiplier: {this.height.ToString("0.000")}");
             this.height = GUILayout.HorizontalSlider(this.height, this.minHeight, this.maxHeight);
             GUILayout.Space(10);
-
+            if (oldSize != this.size || oldHeight != this.height)
+                sizeNeedsUpdating = true;
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Reset to defaults", GUILayout.Width(150)))
             {
+                sizeNeedsUpdating = true;
                 this.deltaMass = 0;
                 this.mass = this.part.partInfo.partPrefab.mass.ToString();
                 this.currentMass = this.part.TotalMass();
@@ -287,17 +298,30 @@ namespace NRAP
         #endregion
 
         #region Functions
-        private void Update()
+        private void LateUpdate()
         {
-            if (CompatibilityChecker.IsAllCompatible() && HighLogic.LoadedSceneIsEditor && (EditorLogic.SortedShipList[0] == this.part || this.part.parent != null))
+            if ( HighLogic.LoadedSceneIsEditor && (EditorLogic.SortedShipList[0] == this.part || this.part.parent != null))
             {
-                UpdateSize();
+                if (sizeNeedsUpdating)
+                {
+                    float m;
+                    if (float.TryParse(this.mass, out m) && NRAPUtils.CheckRange(m, this.minMass, this.maxMass))
+                    {
+                        this.deltaMass = m - this.part.partInfo.partPrefab.mass;
+                        this.currentMass = this.part.TotalMass();
+                        //  GameEvents.onEditorShipModified.Fire(EditorLogic.fetch.ship);
+                    }
+                    UpdateSize();
+                    sizeNeedsUpdating = false;
+                    GameEvents.onEditorShipModified.Fire(EditorLogic.fetch.ship);
+                }
+                this.currentMass = this.part.TotalMass();
             }
         }
 
         private void OnGUI()
         {
-            if (CompatibilityChecker.IsAllCompatible() && HighLogic.LoadedSceneIsEditor && this.visible)
+            if (HighLogic.LoadedSceneIsEditor && this.visible)
             {
                 GUI.skin = HighLogic.Skin;
                 this.window = GUILayout.Window(this.id, this.window, Window, "NRAP Test Weight " + NRAPUtils.AssemblyVersion);
@@ -308,9 +332,11 @@ namespace NRAP
         #region Overrides
         public override void OnStart(StartState state)
         {
-            if (!CompatibilityChecker.IsAllCompatible() || (!HighLogic.LoadedSceneIsFlight && !HighLogic.LoadedSceneIsEditor)) { return; }
+            if ((!HighLogic.LoadedSceneIsFlight && !HighLogic.LoadedSceneIsEditor)) { return; }
+            //Debug.Log("ModuleTestWeight.OnStart");
             if (HighLogic.LoadedSceneIsEditor)
             {
+                
                 if (!this.initiated)
                 {
                     this.initiated = true;
@@ -326,16 +352,16 @@ namespace NRAP
                         this.baseDiameter = 1.25f;
                     }
 
-                    if (this.part.findAttachNode("top") != null) { this.top = this.part.findAttachNode("top").originalPosition.y; }
-                    if (this.part.findAttachNode("bottom") != null) { this.bottom = this.part.findAttachNode("bottom").originalPosition.y; }
+                    if (this.part.FindAttachNode("top") != null) { this.top = this.part.FindAttachNode("top").originalPosition.y; }
+                    if (this.part.FindAttachNode("bottom") != null) { this.bottom = this.part.FindAttachNode("bottom").originalPosition.y; }
                     this.currentTop = this.top;
                     this.currentBottom = this.bottom;
                     if (this.minMass <= 0) { this.minMass = 0.01f; }
                 }
                 this.window = new Rect(200, 200, 300, 200);
                 this.drag = new Rect(0, 0, 300, 30);
-                if (this.part.findAttachNode("top") != null) { this.part.findAttachNode("top").originalPosition.y = this.currentTop; }
-                if (this.part.findAttachNode("bottom") != null) { this.part.findAttachNode("bottom").originalPosition.y = this.currentBottom; }
+                if (this.part.FindAttachNode("top") != null) { this.part.FindAttachNode("top").originalPosition.y = this.currentTop; }
+                if (this.part.FindAttachNode("bottom") != null) { this.part.FindAttachNode("bottom").originalPosition.y = this.currentBottom; }
             }
             this.baseHeight = this.part.transform.GetChild(0).localScale.y;
             this.baseRadial = this.part.transform.GetChild(0).localScale.x;
@@ -347,7 +373,7 @@ namespace NRAP
 
         public override string GetInfo()
         {
-            if (!CompatibilityChecker.IsAllCompatible()) { return string.Empty; }
+           
 
             StringBuilder builder = new StringBuilder();
             builder.AppendFormat("Mass range: {0} - {1}t\n", this.maxMass, this.minMass);

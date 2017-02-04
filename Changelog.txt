@@ -1,0 +1,8 @@
+Changelog
+
+1.5.2
+	Fixed issue where it was telling KSP that the size was changing every
+	tick, which was causing issues in other mods which were reacting to 
+	the event
+	Fixed issue where clicking Apply wasn't updating the Totalmass display
+	immediately, you needed to click it a 2nd time
