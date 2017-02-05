@@ -28,7 +28,7 @@
 	string s;
 
 
-	string versionfile =   @"D:\Users\jbb\github\NRAP\NRAP\NRAP.version";
+	string versionfile =   @"D:\Users\jbb\github\NRAP\Output\GameData\NRAP\NRAP.version";
 
 	if (!File.Exists(versionfile))
 	{

@@ -1,8 +1,13 @@
 Changelog
 
 1.5.2
-	Fixed issue where it was telling KSP that the size was changing every
-	tick, which was causing issues in other mods which were reacting to 
-	the event
-	Fixed issue where clicking Apply wasn't updating the Totalmass display
-	immediately, you needed to click it a 2nd time
+
+	Fixed issue where it was telling KSP that the size was changing every tick, which was causing issues in other mods which were reacting to the event
+	Fixed issue where clicking Apply wasn't updating the Totalmass display immediately, you needed to click it a 2nd time
+	Fixed issue where changing the fuel wasn't showing the change in mass unless you clicked the Apply button
+	Removed the CompatibilityChecker
+
+1.5.2.1
+	Added code to compile in the version info into the AssemblyVersion field
+	Pointed to new .version file 
+	Added deploy and buildRelease batch file
