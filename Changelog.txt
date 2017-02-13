@@ -11,3 +11,6 @@ Changelog
 	Added code to compile in the version info into the AssemblyVersion field
 	Pointed to new .version file 
 	Added deploy and buildRelease batch file
+
+1.5.3
+	Fixed problem with loading part on saved ship loses width

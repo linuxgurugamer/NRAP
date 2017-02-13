@@ -28,7 +28,7 @@ namespace NRAP
         public float weightCost = 0.1f;
 
         [KSPField(isPersistant = true)]
-        public float baseDiameter = 1.25f;
+        public float baseDiameter = 0f;
 
         [KSPField(isPersistant = true, guiActive = true, guiFormat = "0.###", guiName = "Total mass", guiUnits = "t", guiActiveEditor = true)]
         public float currentMass;
@@ -87,12 +87,14 @@ namespace NRAP
             AttachNode topNode, bottomNode;
             bool hasTopNode = this.part.TryGetAttachNodeById("top", out topNode);
             bool hasBottomNode = this.part.TryGetAttachNodeById("bottom", out bottomNode);
+
             float radialFactor = this.baseRadial * this.width;
             float heightFactor = this.baseHeight * this.height;
             Transform root = this.part.transform.GetChild(0);
             float originalX = root.localScale.x;
             float originalY = root.localScale.y;
             root.localScale = new Vector3(radialFactor, heightFactor, radialFactor);
+            this.baseDiameter = GetSize(this.size);
 
             //If part is root part
             if ((HighLogic.LoadedSceneIsEditor && this.part == EditorLogic.SortedShipList[0]) || (HighLogic.LoadedSceneIsFlight && this.vessel.rootPart == this.part))
@@ -179,8 +181,10 @@ namespace NRAP
             int nodeSize = Math.Min(this.size, 3);
             if (hasBottomNode) { bottomNode.size = nodeSize; }
             if (hasTopNode) { topNode.size = nodeSize; }
-            if (HighLogic.LoadedSceneIsEditor) { GameEvents.onEditorShipModified.Fire(EditorLogic.fetch.ship); }
-            else if (HighLogic.LoadedSceneIsFlight) { StartCoroutine(UpdateDragCube()); }
+            if (HighLogic.LoadedSceneIsEditor)
+                GameEvents.onEditorShipModified.Fire(EditorLogic.fetch.ship); 
+            else if (HighLogic.LoadedSceneIsFlight)
+                StartCoroutine(UpdateDragCube()); 
         }
 
         private float GetSize(int id) => this.sizes[id];
@@ -244,9 +248,10 @@ namespace NRAP
             oldSize = this.size;
             oldHeight = this.height;
 
-            GUILayout.Label($"Diameter (m): {{ {GetSize(this.size)}");
+            this.baseDiameter = GetSize(this.size);
+            GUILayout.Label($"Diameter (m):  {this.baseDiameter}");
             this.size = (int)GUILayout.HorizontalSlider(this.size, 0, 4);
-            this.width = GetSize(this.size) / this.baseDiameter;
+            this.width = GetSize(this.size) / 2.5f; // this.baseDiameter;
 
             GUILayout.Label($"Height multiplier: {this.height.ToString("0.000")}");
             this.height = GUILayout.HorizontalSlider(this.height, this.minHeight, this.maxHeight);
@@ -337,10 +342,11 @@ namespace NRAP
             if (HighLogic.LoadedSceneIsEditor)
             {
                 
-                if (!this.initiated)
+               // if (!this.initiated)
                 {
                     this.initiated = true;
                     this.mass = this.part.mass.ToString();
+
                     try
                     {
                         this.size = GetID(this.baseDiameter);
@@ -365,9 +371,9 @@ namespace NRAP
             }
             this.baseHeight = this.part.transform.GetChild(0).localScale.y;
             this.baseRadial = this.part.transform.GetChild(0).localScale.x;
-            this.width = GetSize(this.size) / this.baseDiameter;
+            this.width = GetSize(this.size) / 2.5f; //  this.baseDiameter;
             this.currentMass = this.part.partInfo.partPrefab.mass + this.deltaMass;
-
+            sizeNeedsUpdating = true;
             if (HighLogic.LoadedSceneIsFlight) { UpdateSize(); }
         }
 
