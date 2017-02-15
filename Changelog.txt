@@ -13,4 +13,5 @@ Changelog
 	Added deploy and buildRelease batch file
 
 1.5.3
-	Fixed problem with loading part on saved ship loses width
+	Fixed problem with loading part on saved ship loses width.
+	Changed NRAP to disallow it from being the root part

@@ -84,8 +84,11 @@ namespace NRAP
 
         private void UpdateSize()
         {
-            AttachNode topNode, bottomNode;
+            AttachNode  bottomNode;
+#if false
+            AttachNode topNode;
             bool hasTopNode = this.part.TryGetAttachNodeById("top", out topNode);
+#endif
             bool hasBottomNode = this.part.TryGetAttachNodeById("bottom", out bottomNode);
 
             float radialFactor = this.baseRadial * this.width;
@@ -99,6 +102,7 @@ namespace NRAP
             //If part is root part
             if ((HighLogic.LoadedSceneIsEditor && this.part == EditorLogic.SortedShipList[0]) || (HighLogic.LoadedSceneIsFlight && this.vessel.rootPart == this.part))
             {
+#if false
                 if (hasTopNode)
                 {
                     float originalTop = topNode.position.y;
@@ -110,6 +114,7 @@ namespace NRAP
                         topNode.attachedPart.transform.Translate(0, topDifference, 0, this.part.transform);
                     }
                 }
+#endif
                 if (hasBottomNode)
                 {
                     float originalBottom = bottomNode.position.y;
@@ -131,6 +136,7 @@ namespace NRAP
                 this.currentBottom = bottomNode.position.y;
                 float bottomDifference = this.currentBottom - originalBottom;
                 this.part.transform.Translate(0, -bottomDifference, 0, this.part.transform);
+#if false
                 if (hasTopNode)
                 {
                     float originalTop = topNode.position.y;
@@ -139,8 +145,10 @@ namespace NRAP
                     float topDifference = this.currentTop - originalTop;
                     topNode.attachedPart.transform.Translate(0, -(bottomDifference - topDifference), 0, this.part.transform);
                 }
+#endif
             }
 
+#if false
             //If parent part is attached to top node
             else if (hasTopNode && CheckParentNode(topNode))
             {
@@ -158,6 +166,7 @@ namespace NRAP
                     bottomNode.attachedPart.transform.Translate(0, -(topDifference - bottomDifference), 0, this.part.transform);
                 }
             }
+#endif
 
             //Surface attached parts
             if (this.part.children.Any(p => p.attachMode == AttachModes.SRF_ATTACH))
@@ -180,7 +189,9 @@ namespace NRAP
             //Node size
             int nodeSize = Math.Min(this.size, 3);
             if (hasBottomNode) { bottomNode.size = nodeSize; }
+#if false
             if (hasTopNode) { topNode.size = nodeSize; }
+#endif
             if (HighLogic.LoadedSceneIsEditor)
                 GameEvents.onEditorShipModified.Fire(EditorLogic.fetch.ship); 
             else if (HighLogic.LoadedSceneIsFlight)
@@ -273,6 +284,7 @@ namespace NRAP
             if (GUILayout.Button("Close", GUILayout.Width(150))) { this.visible = false; }
             GUILayout.EndHorizontal();
             GUILayout.EndVertical();
+            GUI.DragWindow();
         }
 
         public float GetModuleCost(float defaultCost, ModifierStagingSituation sit) => this.part.mass * this.weightCost;
@@ -282,9 +294,9 @@ namespace NRAP
         public float GetModuleMass(float defaultMass, ModifierStagingSituation sit) => this.deltaMass;
 
         public ModifierChangeWhen GetModuleMassChangeWhen() => ModifierChangeWhen.FIXED;
-        #endregion
+#endregion
 
-        #region Static methods
+#region Static methods
         public void CloseOpenedWindow()
         {
             foreach (Part p in EditorLogic.SortedShipList)
@@ -300,9 +312,9 @@ namespace NRAP
                 }
             }
         }
-        #endregion
+#endregion
 
-        #region Functions
+#region Functions
         private void LateUpdate()
         {
             if ( HighLogic.LoadedSceneIsEditor && (EditorLogic.SortedShipList[0] == this.part || this.part.parent != null))
@@ -332,11 +344,13 @@ namespace NRAP
                 this.window = GUILayout.Window(this.id, this.window, Window, "NRAP Test Weight " + NRAPUtils.AssemblyVersion);
             }
         }
-        #endregion
+#endregion
 
-        #region Overrides
+#region Overrides
         public override void OnStart(StartState state)
         {
+            part.attachRules.allowRoot = false;
+
             if ((!HighLogic.LoadedSceneIsFlight && !HighLogic.LoadedSceneIsEditor)) { return; }
             //Debug.Log("ModuleTestWeight.OnStart");
             if (HighLogic.LoadedSceneIsEditor)
@@ -388,6 +402,6 @@ namespace NRAP
             builder.Append("Base diameter range: 0.625m, 1.25m, 2.5m, 3.75m, 5m");
             return builder.ToString();
         }
-        #endregion
+#endregion
     }
 }
