@@ -15,3 +15,6 @@ Changelog
 1.5.3
 	Fixed problem with loading part on saved ship loses width.
 	Changed NRAP to disallow it from being the root part
+
+1.5.4
+	Test release of snappable and fully dynamic diameter

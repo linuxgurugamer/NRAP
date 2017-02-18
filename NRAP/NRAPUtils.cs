@@ -25,6 +25,7 @@ namespace NRAP
         #region Constructors
         static NRAPUtils()
         {
+#if false
             Version version = new Version(FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion);
             if (version.Revision == 0)
             {
@@ -32,16 +33,16 @@ namespace NRAP
                 else { AssemblyVersion = "v" + version.ToString(3); }
             }
             else { AssemblyVersion = "v" + version; }
-
+#endif
             RedLabel = new GUIStyle(HighLogic.Skin.label)
             {
                 normal = { textColor = XKCDColors.Red },
                 hover = { textColor = XKCDColors.Red }
             };
         }
-        #endregion
+#endregion
 
-        #region Methods
+#region Methods
         /// <summary>
         /// Checks if the string can be parsed into a float
         /// </summary>
@@ -59,6 +60,6 @@ namespace NRAP
         /// <param name="min">Minimum bound</param>
         /// <param name="max">Maximum bound</param>
         public static bool CheckRange(float f, float min, float max) => f > min && f <= max;
-        #endregion
+#endregion
     }
 }

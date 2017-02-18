@@ -40,6 +40,9 @@ namespace NRAP
         private int size = 1;
 
         [KSPField(isPersistant = true)]
+        public bool snapDiameter = true;
+
+        [KSPField(isPersistant = true)]
         public float deltaMass;
 
         [KSPField(isPersistant = true)]
@@ -56,6 +59,10 @@ namespace NRAP
         private readonly int id = Guid.NewGuid().GetHashCode();
         private Rect window , drag;
         private bool visible;
+
+        const float MIN_SIZE = 0.625f;
+        const float MAX_SIZE = 5f;
+#if false
         private readonly Dictionary<int, float> sizes = new Dictionary<int, float>(5)
         {
             { 0, 0.625f },
@@ -64,19 +71,28 @@ namespace NRAP
             { 3, 3.75f },
             { 4, 5 }
         };
-        private float width, baseHeight, baseRadial;
-        #endregion
+#endif
 
-        #region Part GUI
+        int getNodeSize(float dia)
+        {
+            if (dia < 3.75)
+                return 3;
+            return 4;
+        }
+
+        private float width, baseHeight, baseRadial;
+#endregion
+
+#region Part GUI
         [KSPEvent(active = true, guiActive = false, guiActiveEditor = true, guiName = "Toggle window")]
         public void GUIToggle()
         {
             CloseOpenedWindow();
             this.visible = !this.visible;
         }
-        #endregion
+#endregion
 
-        #region Methods
+#region Methods
         private bool CheckParentNode(AttachNode node)
         {
             return node.attachedPart != null && node.attachedPart == this.part?.parent;
@@ -97,7 +113,7 @@ namespace NRAP
             float originalX = root.localScale.x;
             float originalY = root.localScale.y;
             root.localScale = new Vector3(radialFactor, heightFactor, radialFactor);
-            this.baseDiameter = GetSize(this.size);
+   //         this.baseDiameter = GetSize(this.size);
 
             //If part is root part
             if ((HighLogic.LoadedSceneIsEditor && this.part == EditorLogic.SortedShipList[0]) || (HighLogic.LoadedSceneIsFlight && this.vessel.rootPart == this.part))
@@ -187,7 +203,8 @@ namespace NRAP
             }
 
             //Node size
-            int nodeSize = Math.Min(this.size, 3);
+            //int nodeSize = Math.Min(this.size, 3);
+            int nodeSize = getNodeSize(this.baseDiameter);
             if (hasBottomNode) { bottomNode.size = nodeSize; }
 #if false
             if (hasTopNode) { topNode.size = nodeSize; }
@@ -198,9 +215,26 @@ namespace NRAP
                 StartCoroutine(UpdateDragCube()); 
         }
 
-        private float GetSize(int id) => this.sizes[id];
+        private float GetSize(int id)
+        {
+            if (id < 0 || id > sizes.Count() - 1)
+            {
+                Log.Error("Error, size not found: " + id.ToString());
+                return 2.5f;
+            }
+            return this.sizes[id];
+        }
 
-        private int GetID(float size) => this.sizes.First(p => p.Value == size).Key;
+        private int GetID(float size)
+        {
+            for (int i = 0; i < this.sizes.Count() - 1; i++)
+            {
+                if (this.sizes[i] >= size)
+                    return i;
+            }
+            return this.sizes.Count() - 1;
+         //   ''=> this.sizes.First(p => p.Value == size).Key;
+        }
 
         private IEnumerator<YieldInstruction> UpdateDragCube()
         {
@@ -215,8 +249,10 @@ namespace NRAP
         }
 
         bool sizeNeedsUpdating = false;
-        int oldSize;
+        //int oldSize;
         float oldHeight;
+        float oldDiameter;
+
 
         private void Window(int id)
         {
@@ -256,19 +292,32 @@ namespace NRAP
             GUILayout.Space(10);
 
             
-            oldSize = this.size;
+         //   oldSize = this.size;
             oldHeight = this.height;
+            oldDiameter = this.baseDiameter;
 
-            this.baseDiameter = GetSize(this.size);
+            //this.baseDiameter = GetSize(this.size);
+            snapDiameter = GUILayout.Toggle(snapDiameter, "Snap diameter to predefined sizes");
             GUILayout.Label($"Diameter (m):  {this.baseDiameter}");
-            this.size = (int)GUILayout.HorizontalSlider(this.size, 0, 4);
-            this.width = GetSize(this.size) / 2.5f; // this.baseDiameter;
+            if (snapDiameter)
+            {
+                this.size = (int)GUILayout.HorizontalSlider(this.size, 0, sizes.Count() - 1);
+                this.baseDiameter = GetSize(this.size);
+            }
+            //this.size = (int)GUILayout.HorizontalSlider(this.size, 0, 4);
+            //this.width = GetSize(this.size) / 2.5f; // this.baseDiameter;
+            else
+            {
+                this.baseDiameter = GUILayout.HorizontalSlider(this.baseDiameter, MIN_SIZE, MAX_SIZE);
+            }
+            this.width = this.baseDiameter / 2.5f;
 
             GUILayout.Label($"Height multiplier: {this.height.ToString("0.000")}");
             this.height = GUILayout.HorizontalSlider(this.height, this.minHeight, this.maxHeight);
             GUILayout.Space(10);
-            if (oldSize != this.size || oldHeight != this.height)
-                sizeNeedsUpdating = true;
+            //if (oldSize != this.size || oldHeight != this.height)
+            if (oldDiameter != this.baseDiameter || oldHeight != this.height)
+                    sizeNeedsUpdating = true;
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Reset to defaults", GUILayout.Width(150)))
             {
@@ -276,7 +325,7 @@ namespace NRAP
                 this.deltaMass = 0;
                 this.mass = this.part.partInfo.partPrefab.mass.ToString();
                 this.currentMass = this.part.TotalMass();
-                this.size = GetID(this.baseDiameter);
+              //  this.size = GetID(this.baseDiameter);
                 this.width = 1;
                 this.height = 1;
             }
@@ -346,11 +395,39 @@ namespace NRAP
         }
 #endregion
 
+        public Dictionary<int, float> sizes = new Dictionary<int, float>();
+        int sizecnt = 0;
+        void setupdictionary(float value)
+        {
+            if (NRAPUtils.CheckRange(value, MIN_SIZE - 0.001f, MAX_SIZE))
+            {
+                Log.Info("Adding : " + value.ToString());
+                sizes.Add(sizecnt, value);
+                sizecnt++;
+            }
+        }
+
 #region Overrides
         public override void OnStart(StartState state)
         {
+            Log.setTitle("NRAP");
             part.attachRules.allowRoot = false;
+            if (HighLogic.LoadedSceneIsEditor)
+            {
+                sizecnt = 0;
+                setupdictionary(HighLogic.CurrentGame.Parameters.CustomParams<NRAPCustomParams>().size0);
+                setupdictionary(HighLogic.CurrentGame.Parameters.CustomParams<NRAPCustomParams>().size1);
+                setupdictionary(HighLogic.CurrentGame.Parameters.CustomParams<NRAPCustomParams>().size2);
+                setupdictionary(HighLogic.CurrentGame.Parameters.CustomParams<NRAPCustomParams>().size3);
+                setupdictionary(HighLogic.CurrentGame.Parameters.CustomParams<NRAPCustomParams>().size4);
+                setupdictionary(HighLogic.CurrentGame.Parameters.CustomParams<NRAPCustomParams>().size5);
+                setupdictionary(HighLogic.CurrentGame.Parameters.CustomParams<NRAPCustomParams>().size6);
+                setupdictionary(HighLogic.CurrentGame.Parameters.CustomParams<NRAPCustomParams>().size7);
+                setupdictionary(HighLogic.CurrentGame.Parameters.CustomParams<NRAPCustomParams>().size8);
+                setupdictionary(HighLogic.CurrentGame.Parameters.CustomParams<NRAPCustomParams>().size9);
 
+
+            }
             if ((!HighLogic.LoadedSceneIsFlight && !HighLogic.LoadedSceneIsEditor)) { return; }
             //Debug.Log("ModuleTestWeight.OnStart");
             if (HighLogic.LoadedSceneIsEditor)
@@ -360,7 +437,7 @@ namespace NRAP
                 {
                     this.initiated = true;
                     this.mass = this.part.mass.ToString();
-
+#if false
                     try
                     {
                         this.size = GetID(this.baseDiameter);
@@ -371,7 +448,16 @@ namespace NRAP
                         this.size = 1;
                         this.baseDiameter = 1.25f;
                     }
+#endif
+                    if (this.baseDiameter < MIN_SIZE || this.baseDiameter > MAX_SIZE)
+                    {
+                        Debug.LogError("[NRAP]: Invalid base diameter.");
+                        if (this.baseDiameter < MIN_SIZE)
+                            this.baseDiameter = MIN_SIZE;
+                        else
+                            this.baseDiameter = MAX_SIZE;
 
+                    }
                     if (this.part.FindAttachNode("top") != null) { this.top = this.part.FindAttachNode("top").originalPosition.y; }
                     if (this.part.FindAttachNode("bottom") != null) { this.bottom = this.part.FindAttachNode("bottom").originalPosition.y; }
                     this.currentTop = this.top;
@@ -385,7 +471,8 @@ namespace NRAP
             }
             this.baseHeight = this.part.transform.GetChild(0).localScale.y;
             this.baseRadial = this.part.transform.GetChild(0).localScale.x;
-            this.width = GetSize(this.size) / 2.5f; //  this.baseDiameter;
+            //this.width = GetSize(this.size) / 2.5f; //  this.baseDiameter;
+            this.width = this.baseDiameter / 2.5f;
             this.currentMass = this.part.partInfo.partPrefab.mass + this.deltaMass;
             sizeNeedsUpdating = true;
             if (HighLogic.LoadedSceneIsFlight) { UpdateSize(); }
