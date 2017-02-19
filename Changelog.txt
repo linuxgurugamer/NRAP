@@ -17,4 +17,8 @@ Changelog
 	Changed NRAP to disallow it from being the root part
 
 1.5.4
-	Test release of snappable and fully dynamic diameter
+	Snappable and fully dynamic diameter
+
+1.5.5
+	Added undo ability
+	Fixed node size for sizes < 3.75

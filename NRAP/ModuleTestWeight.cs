@@ -37,7 +37,7 @@ namespace NRAP
         public string mass = string.Empty;
 
         [KSPField(isPersistant = true)]
-        private int size = 1;
+        private int size = 2;
 
         [KSPField(isPersistant = true)]
         public bool snapDiameter = true;
@@ -49,7 +49,7 @@ namespace NRAP
         private float height = 1, top, bottom;
 
         [KSPField(isPersistant = true)]
-        private float currentBottom, currentTop;
+        private float currentBottom; //, currentTop;
 
         [KSPField(isPersistant = true)]
         public bool initiated;
@@ -75,6 +75,12 @@ namespace NRAP
 
         int getNodeSize(float dia)
         {
+            if (dia <= 0.626f)
+                return 0;
+            if (dia <= 1.26f)
+                return 1;
+            if (dia <= 2.51f)
+                return 2;
             if (dia < 3.75)
                 return 3;
             return 4;
@@ -133,6 +139,7 @@ namespace NRAP
 #endif
                 if (hasBottomNode)
                 {
+                    Log.Info("Rootpart, hasBottomNode");
                     float originalBottom = bottomNode.position.y;
                     bottomNode.position.y = this.bottom * this.height;
                     this.currentBottom = bottomNode.position.y;
@@ -147,6 +154,7 @@ namespace NRAP
             //If parent part is attached to bottom node
             else if (hasBottomNode && CheckParentNode(bottomNode))
             {
+                Log.Info("parent attached to bottom node");
                 float originalBottom = bottomNode.position.y;
                 bottomNode.position.y = this.bottom * this.height;
                 this.currentBottom = bottomNode.position.y;
@@ -222,17 +230,17 @@ namespace NRAP
                 Log.Error("Error, size not found: " + id.ToString());
                 return 2.5f;
             }
-            return this.sizes[id];
+            return sizes[id];
         }
 
         private int GetID(float size)
         {
-            for (int i = 0; i < this.sizes.Count() - 1; i++)
+            for (int i = 0; i < sizes.Count() - 1; i++)
             {
-                if (this.sizes[i] >= size)
+                if (sizes[i] >= size)
                     return i;
             }
-            return this.sizes.Count() - 1;
+            return sizes.Count() - 1;
          //   ''=> this.sizes.First(p => p.Value == size).Key;
         }
 
@@ -361,9 +369,9 @@ namespace NRAP
                 }
             }
         }
-#endregion
-
-#region Functions
+        #endregion
+      
+        #region Functions
         private void LateUpdate()
         {
             if ( HighLogic.LoadedSceneIsEditor && (EditorLogic.SortedShipList[0] == this.part || this.part.parent != null))
@@ -380,6 +388,7 @@ namespace NRAP
                     UpdateSize();
                     sizeNeedsUpdating = false;
                     GameEvents.onEditorShipModified.Fire(EditorLogic.fetch.ship);
+                    EditorLogic.fetch.SetBackup();
                 }
                 this.currentMass = this.part.TotalMass();
             }
@@ -395,8 +404,8 @@ namespace NRAP
         }
 #endregion
 
-        public Dictionary<int, float> sizes = new Dictionary<int, float>();
-        int sizecnt = 0;
+        static public Dictionary<int, float> sizes = new Dictionary<int, float>();
+        static int sizecnt = 0;
         void setupdictionary(float value)
         {
             if (NRAPUtils.CheckRange(value, MIN_SIZE - 0.001f, MAX_SIZE))
@@ -407,12 +416,11 @@ namespace NRAP
             }
         }
 
-#region Overrides
-        public override void OnStart(StartState state)
+        #region Overrides
+
+        void initDictionary()
         {
-            Log.setTitle("NRAP");
-            part.attachRules.allowRoot = false;
-            if (HighLogic.LoadedSceneIsEditor)
+            if (sizecnt == 0 && HighLogic.LoadedSceneIsEditor)
             {
                 sizecnt = 0;
                 setupdictionary(HighLogic.CurrentGame.Parameters.CustomParams<NRAPCustomParams>().size0);
@@ -428,27 +436,22 @@ namespace NRAP
 
 
             }
+        }
+        public override void OnStart(StartState state)
+        {
+            Log.setTitle("NRAP");
+            part.attachRules.allowRoot = false;
             if ((!HighLogic.LoadedSceneIsFlight && !HighLogic.LoadedSceneIsEditor)) { return; }
-            //Debug.Log("ModuleTestWeight.OnStart");
             if (HighLogic.LoadedSceneIsEditor)
             {
-                
-               // if (!this.initiated)
+
+                initDictionary();
+
+                if (!this.initiated)
                 {
                     this.initiated = true;
                     this.mass = this.part.mass.ToString();
-#if false
-                    try
-                    {
-                        this.size = GetID(this.baseDiameter);
-                    }
-                    catch (Exception)
-                    {
-                        Debug.LogError("[NRAP]: Invalid base diameter.");
-                        this.size = 1;
-                        this.baseDiameter = 1.25f;
-                    }
-#endif
+
                     if (this.baseDiameter < MIN_SIZE || this.baseDiameter > MAX_SIZE)
                     {
                         Debug.LogError("[NRAP]: Invalid base diameter.");
@@ -458,15 +461,16 @@ namespace NRAP
                             this.baseDiameter = MAX_SIZE;
 
                     }
-                    if (this.part.FindAttachNode("top") != null) { this.top = this.part.FindAttachNode("top").originalPosition.y; }
+                  //  if (this.part.FindAttachNode("top") != null) { this.top = this.part.FindAttachNode("top").originalPosition.y; }
                     if (this.part.FindAttachNode("bottom") != null) { this.bottom = this.part.FindAttachNode("bottom").originalPosition.y; }
-                    this.currentTop = this.top;
+                    // this.currentTop = this.top;
+                   // this.bottom = this.currentBottom;
                     this.currentBottom = this.bottom;
                     if (this.minMass <= 0) { this.minMass = 0.01f; }
                 }
                 this.window = new Rect(200, 200, 300, 200);
                 this.drag = new Rect(0, 0, 300, 30);
-                if (this.part.FindAttachNode("top") != null) { this.part.FindAttachNode("top").originalPosition.y = this.currentTop; }
+              //  if (this.part.FindAttachNode("top") != null) { this.part.FindAttachNode("top").originalPosition.y = this.currentTop; }
                 if (this.part.FindAttachNode("bottom") != null) { this.part.FindAttachNode("bottom").originalPosition.y = this.currentBottom; }
             }
             this.baseHeight = this.part.transform.GetChild(0).localScale.y;
@@ -475,6 +479,7 @@ namespace NRAP
             this.width = this.baseDiameter / 2.5f;
             this.currentMass = this.part.partInfo.partPrefab.mass + this.deltaMass;
             sizeNeedsUpdating = true;
+         //   UpdateSize();
             if (HighLogic.LoadedSceneIsFlight) { UpdateSize(); }
         }
 
@@ -486,7 +491,10 @@ namespace NRAP
             builder.AppendFormat("Mass range: {0} - {1}t\n", this.maxMass, this.minMass);
             builder.AppendFormat("Height multiplier range: {0} - {1}\n", this.minHeight, this.maxHeight);
             builder.AppendFormat("Base diameter: {0}m\n", this.baseDiameter);
-            builder.Append("Base diameter range: 0.625m, 1.25m, 2.5m, 3.75m, 5m");
+            //builder.Append("Base diameter range: 0.625m, 1.25m, 2.5m, 3.75m, 5m");
+
+            builder.Append("Base diameter range: " + MIN_SIZE.ToString() + "m - " + MAX_SIZE.ToString() + "m ");
+
             return builder.ToString();
         }
 #endregion
