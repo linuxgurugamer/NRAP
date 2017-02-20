@@ -22,3 +22,5 @@ Changelog
 1.5.5
 	Added undo ability
 	Fixed node size for sizes < 3.75
+1.5.5.1
+	Reenabled ability to be a root part
