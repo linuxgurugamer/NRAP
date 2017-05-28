@@ -13,9 +13,12 @@ namespace NRAP
         #region Methods
         private void CorrectIcon()
         {
-            PartCategorizer.Instance.filters.Find(f => f.button.categoryName == "Filter by Module").subcategories
-                           .Single(s => s.button.categoryName == "Test Weight").button
-                           .SetIcon(PartCategorizer.Instance.iconLoader.GetIcon("R&D_node_icon_generic"));
+            if (PartCategorizer.Instance != null && PartCategorizer.Instance.filters != null && PartCategorizer.Instance.iconLoader != null)
+            {
+                PartCategorizer.Instance.filters.Find(f => f.button.categoryName == "Filter by module").subcategories
+                               .Single(s => s.button.categoryName == "Test Weight").button
+                               .SetIcon(PartCategorizer.Instance.iconLoader.GetIcon("R&D_node_icon_generic"));
+            }
         }
         #endregion
 

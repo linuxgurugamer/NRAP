@@ -18,6 +18,7 @@ namespace NRAP
         public override string Title { get { return ""; } }
         public override GameParameters.GameMode GameMode { get { return GameParameters.GameMode.ANY; } }
         public override string Section { get { return "NRAP"; } }
+        public override string DisplaySection { get { return "NRAP"; } }
         public override int SectionOrder { get { return 1; } }
         public override bool HasPresets { get { return true; } }
 
