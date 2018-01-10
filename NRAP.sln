@@ -1,16 +1,18 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.8
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRAP", "NRAP\NRAP.csproj", "{0C865D25-E442-4361-A5E7-6DDD8272ACE5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D1B4E629-3830-42EE-82F0-4DD30E88BB00}"
 	ProjectSection(SolutionItems) = preProject
-		NRAP\buildRelease.bat = NRAP\buildRelease.bat
+		buildRelease.bat = buildRelease.bat
 		Changelog.txt = Changelog.txt
-		NRAP\deploy.bat = NRAP\deploy.bat
-		Output\GameData\NRAP\NRAP.version = Output\GameData\NRAP\NRAP.version
+		deploy.bat = deploy.bat
+		jenkins.txt = jenkins.txt
+		License.txt = License.txt
+		NRAP.version = NRAP.version
 	EndProjectSection
 EndProject
 Global
@@ -26,5 +28,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6B331B9E-44CA-4B86-8079-D42216FB2E43}
 	EndGlobalSection
 EndGlobal
