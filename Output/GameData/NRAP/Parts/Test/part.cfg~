@@ -35,8 +35,6 @@ PART
 
 	vesselType = Probe
 
-	bulkheadProfiles = size2
-
 	tags = test weight mass experi nrap yellow white size
 
 	MODULE

@@ -49,7 +49,7 @@ namespace NRAP
         private float height = 1, top, bottom;
 
         [KSPField(isPersistant = true)]
-        private float currentBottom; //, currentTop;
+        private float currentBottom, currentTop;
 
         [KSPField(isPersistant = true)]
         public bool initiated;
@@ -100,7 +100,7 @@ namespace NRAP
         private void UpdateSize()
         {
             AttachNode bottomNode;
-#if false
+#if true
             AttachNode topNode;
             bool hasTopNode = this.part.TryGetAttachNodeById("top", out topNode);
 #endif
@@ -118,7 +118,7 @@ namespace NRAP
             //If part is root part
             if ((HighLogic.LoadedSceneIsEditor && this.part == EditorLogic.SortedShipList[0]) || (HighLogic.LoadedSceneIsFlight && this.vessel.rootPart == this.part))
             {
-#if false
+#if true
                 if (hasTopNode)
                 {
                     float originalTop = topNode.position.y;
@@ -155,7 +155,7 @@ namespace NRAP
                 this.currentBottom = bottomNode.position.y;
                 float bottomDifference = this.currentBottom - originalBottom;
                 this.part.transform.Translate(0, -bottomDifference, 0, this.part.transform);
-#if false
+#if true
                 if (hasTopNode)
                 {
                     float originalTop = topNode.position.y;
@@ -167,7 +167,7 @@ namespace NRAP
 #endif
             }
 
-#if false
+#if true
             //If parent part is attached to top node
             else if (hasTopNode && CheckParentNode(topNode))
             {
@@ -209,8 +209,9 @@ namespace NRAP
             //int nodeSize = Math.Min(this.size, 3);
             int nodeSize = getNodeSize(this.baseDiameter);
             if (hasBottomNode) { bottomNode.size = nodeSize; }
-
-//            if (hasTopNode) { topNode.size = nodeSize; }
+#if true
+            if (hasTopNode) { topNode.size = nodeSize; }
+#endif
 
             if (HighLogic.LoadedSceneIsEditor)
                 GameEvents.onEditorShipModified.Fire(EditorLogic.fetch.ship);
@@ -452,15 +453,21 @@ namespace NRAP
                             this.baseDiameter = MAX_SIZE;
 
                     }
-                    //  if (this.part.FindAttachNode("top") != null) { this.top = this.part.FindAttachNode("top").originalPosition.y; }
+#if true
+                    if (this.part.FindAttachNode("top") != null) { this.top = this.part.FindAttachNode("top").originalPosition.y; }
+#endif
                     if (this.part.FindAttachNode("bottom") != null) { this.bottom = this.part.FindAttachNode("bottom").originalPosition.y; }
-                    // this.currentTop = this.top;
+#if true
+                    this.currentTop = this.top;
+#endif
                     this.currentBottom = this.bottom;
                     if (this.minMass <= 0) { this.minMass = 0.01f; }
                 }
                 this.window = new Rect(200, 200, 300, 200);
                 this.drag = new Rect(0, 0, 300, 30);
-                //  if (this.part.FindAttachNode("top") != null) { this.part.FindAttachNode("top").originalPosition.y = this.currentTop; }
+#if true
+                if (this.part.FindAttachNode("top") != null) { this.part.FindAttachNode("top").originalPosition.y = this.currentTop; }
+#endif
                 if (this.part.FindAttachNode("bottom") != null) { this.part.FindAttachNode("bottom").originalPosition.y = this.currentBottom; }
             }
             this.baseHeight = this.part.transform.GetChild(0).localScale.y;
@@ -487,6 +494,6 @@ namespace NRAP
 
             return builder.ToString();
         }
-        #endregion
+#endregion
     }
 }
