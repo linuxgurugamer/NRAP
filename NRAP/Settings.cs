@@ -20,31 +20,47 @@ namespace NRAP
         public override string Section { get { return "NRAP"; } }
         public override string DisplaySection { get { return "NRAP"; } }
         public override int SectionOrder { get { return 1; } }
-        public override bool HasPresets { get { return true; } }
+        public override bool HasPresets { get { return false; } }
 
 
-        [GameParameters.CustomFloatParameterUI("Size 0", minValue = 0.625f, maxValue = 5f, displayFormat = "N3", toolTip ="3 decimals")]
+        [GameParameters.CustomFloatParameterUI("Size 0", minValue = 0.625f, maxValue = 5f, displayFormat = "N3", toolTip = "3 decimals")]
         public float size0 = 0.625f;
         [GameParameters.CustomFloatParameterUI("Size 1", minValue = 0.625f, maxValue = 5f, displayFormat = "N3", toolTip = "3 decimals")]
         public float size1 = 0;
         [GameParameters.CustomFloatParameterUI("Size 2", minValue = 0.625f, maxValue = 5f, displayFormat = "N2", toolTip = "2 decimals")]
         public float size2 = 1.25f;
         [GameParameters.CustomFloatParameterUI("Size 3", minValue = 0.625f, maxValue = 5f, displayFormat = "N2", toolTip = "2 decimals")]
-        public float size3 = 0;
+        public float size3 = 1.5f;
         [GameParameters.CustomFloatParameterUI("Size 4", minValue = 0.625f, maxValue = 5f, displayFormat = "N2", toolTip = "2 decimals")]
-        public float size4 = 0;
+        public float size4 = 1.875f;
         [GameParameters.CustomFloatParameterUI("Size 5", minValue = 0.625f, maxValue = 5f, displayFormat = "N1", toolTip = "1 decimal")]
         public float size5 = 2.5f;
         [GameParameters.CustomFloatParameterUI("Size 6", minValue = 0.625f, maxValue = 5f, displayFormat = "N1", toolTip = "1 decimal")]
-        public float size6 = 0;
+        public float size6 = 3.125f;
         [GameParameters.CustomFloatParameterUI("Size 7", minValue = 0.625f, maxValue = 5f, displayFormat = "N1", toolTip = "1 decimal")]
         public float size7 = 3.75f;
         [GameParameters.CustomFloatParameterUI("Size 8", minValue = 0.625f, maxValue = 5f, displayFormat = "N1", toolTip = "1 decimal")]
-        public float size8 = 0;
+        public float size8 = 5.0f;
         [GameParameters.CustomFloatParameterUI("Size 9", minValue = 0.625f, maxValue = 5f, displayFormat = "N1", toolTip = "1 decimal")]
-        public float size9 = 5;
+        public float size9 = 7.5f;
 
+        [GameParameters.CustomParameterUI("Reset Sizes", toolTip = "Reset sizes to defaults")]
+        public bool resetSizes = false;
 
+        public void ResetSizes()
+        {
+            size0 = 0.625f;
+            size1 = 0;
+            size2 = 1.25f;
+            size3 = 1.5f;
+            size4 = 1.875f;
+            size5 = 2.5f;
+            size6 = 3.125f;
+            size7 = 3.75f;
+            size8 = 5.0f;
+            size9 = 7.5f;
+            resetSizes = false;
+        }
         public override void SetDifficultyPreset(GameParameters.Preset preset)
         { }
 
@@ -54,6 +70,10 @@ namespace NRAP
         }
         public override bool Interactible(MemberInfo member, GameParameters parameters)
         {
+            if (resetSizes)
+            {
+                ResetSizes();
+            }
             return true;
         }
         public override IList ValidValues(MemberInfo member)

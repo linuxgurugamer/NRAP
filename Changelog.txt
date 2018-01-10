@@ -33,3 +33,5 @@ Changelog
 
 1.5.8
 	Inline part added
+	Added more default standard sizes
+	Added toggle in settings window to reset standard sizes
