@@ -35,3 +35,6 @@ Changelog
 	Inline part added
 	Added more default standard sizes
 	Added toggle in settings window to reset standard sizes
+
+1.5.8.1
+	Filled nullref which happened upon entering the editor (either VAB or SPH)
