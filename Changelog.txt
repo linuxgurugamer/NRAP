@@ -11,30 +11,46 @@ Changelog
 	Added code to compile in the version info into the AssemblyVersion field
 	Pointed to new .version file 
 	Added deploy and buildRelease batch file
+1.5.9
+	Added ModuleKerbNetAccess and ModuleDataTransmitter to both parts
+	Reordered Changelog, now newest first
 
-1.5.3
-	Fixed problem with loading part on saved ship loses width.
-	Changed NRAP to disallow it from being the root part
-
-1.5.4
-	Snappable and fully dynamic diameter
-
-1.5.5
-	Added undo ability
-	Fixed node size for sizes < 3.75
-1.5.5.1
-	Reenabled ability to be a root part
-1.5.6
-	updated for 1.3
-	needed to change the case of the text "Filter by Module" to "Filter by module" in the NRAPIconManager
-
-1.5.7
-	Updated for KSP 1.3.1
+1.5.8.1
+	Fixed harmless nullref which happened upon entering the editor (either VAB or SPH)
 
 1.5.8
 	Inline part added
 	Added more default standard sizes
 	Added toggle in settings window to reset standard sizes
 
-1.5.8.1
-	Filled nullref which happened upon entering the editor (either VAB or SPH)
+1.5.7
+	Updated for KSP 1.3.1
+
+1.5.6
+	updated for 1.3
+	needed to change the case of the text "Filter by Module" to "Filter by module" in the NRAPIconManager
+
+1.5.5.1
+	Reenabled ability to be a root part
+
+1.5.5
+	Added undo ability
+	Fixed node size for sizes < 3.75
+
+1.5.4
+	Snappable and fully dynamic diameter
+
+1.5.3
+	Fixed problem with loading part on saved ship loses width.
+	Changed NRAP to disallow it from being the root part
+
+
+
+
+
+
+
+
+
+
+
