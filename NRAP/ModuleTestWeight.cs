@@ -66,6 +66,19 @@ namespace NRAP
         Dictionary<int, float> sizes = new Dictionary<int, float>();
         int sizecnt = 0;
 
+        void SetDefaults()
+        {
+            sizeNeedsUpdating = true;
+            this.deltaMass = 0;
+            this.mass = this.part.partInfo.partPrefab.mass.ToString();
+            this.currentMass = this.part.TotalMass();
+
+            this.height = 1;
+            this.size = 2;
+            this.baseDiameter = GetSize(this.size);
+            this.width = this.baseDiameter / 2.5f;
+        }
+
         int getNodeSize(float dia)
         {
             if (dia <= 0.626f)
@@ -100,10 +113,8 @@ namespace NRAP
         private void UpdateSize()
         {
             AttachNode bottomNode;
-#if true
             AttachNode topNode;
             bool hasTopNode = this.part.TryGetAttachNodeById("top", out topNode);
-#endif
             bool hasBottomNode = this.part.TryGetAttachNodeById("bottom", out bottomNode);
 
             float radialFactor = this.baseRadial * this.width;
@@ -118,7 +129,6 @@ namespace NRAP
             //If part is root part
             if ((HighLogic.LoadedSceneIsEditor && this.part == EditorLogic.SortedShipList[0]) || (HighLogic.LoadedSceneIsFlight && this.vessel.rootPart == this.part))
             {
-#if true
                 if (hasTopNode)
                 {
                     float originalTop = topNode.position.y;
@@ -130,7 +140,6 @@ namespace NRAP
                         topNode.attachedPart.transform.Translate(0, topDifference, 0, this.part.transform);
                     }
                 }
-#endif
 
                 if (hasBottomNode)
                 {
@@ -155,7 +164,7 @@ namespace NRAP
                 this.currentBottom = bottomNode.position.y;
                 float bottomDifference = this.currentBottom - originalBottom;
                 this.part.transform.Translate(0, -bottomDifference, 0, this.part.transform);
-#if true
+
                 if (hasTopNode)
                 {
                     float originalTop = topNode.position.y;
@@ -164,10 +173,8 @@ namespace NRAP
                     float topDifference = this.currentTop - originalTop;
                     topNode.attachedPart.transform.Translate(0, -(bottomDifference - topDifference), 0, this.part.transform);
                 }
-#endif
             }
 
-#if true
             //If parent part is attached to top node
             else if (hasTopNode && CheckParentNode(topNode))
             {
@@ -185,7 +192,6 @@ namespace NRAP
                     bottomNode.attachedPart.transform.Translate(0, -(topDifference - bottomDifference), 0, this.part.transform);
                 }
             }
-#endif
 
             //Surface attached parts
             if (this.part.children.Any(p => p.attachMode == AttachModes.SRF_ATTACH))
@@ -209,9 +215,7 @@ namespace NRAP
             //int nodeSize = Math.Min(this.size, 3);
             int nodeSize = getNodeSize(this.baseDiameter);
             if (hasBottomNode) { bottomNode.size = nodeSize; }
-#if true
             if (hasTopNode) { topNode.size = nodeSize; }
-#endif
 
             if (HighLogic.LoadedSceneIsEditor)
                 GameEvents.onEditorShipModified.Fire(EditorLogic.fetch.ship);
@@ -226,6 +230,7 @@ namespace NRAP
                 Log.Error("Error, size not found: " + id.ToString());
                 return 2.5f;
             }
+            Log.Info("GetSize, id: " + id + ",   size: " + sizes[id]);
             return sizes[id];
         }
 
@@ -324,15 +329,7 @@ namespace NRAP
                 sizeNeedsUpdating = true;
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Reset to defaults", GUILayout.Width(150)))
-            {
-                sizeNeedsUpdating = true;
-                this.deltaMass = 0;
-                this.mass = this.part.partInfo.partPrefab.mass.ToString();
-                this.currentMass = this.part.TotalMass();
-                //  this.size = GetID(this.baseDiameter);
-                this.width = 1;
-                this.height = 1;
-            }
+                SetDefaults();
 
             if (GUILayout.Button("Close", GUILayout.Width(150))) { this.visible = false; }
             GUILayout.EndHorizontal();
@@ -368,10 +365,12 @@ namespace NRAP
         #endregion
 
         #region Functions
+        private bool _firstUpdate = true;
         private void LateUpdate()
         {
-            if (HighLogic.LoadedSceneIsEditor && (EditorLogic.SortedShipList[0] == this.part || this.part.parent != null))
+            if (HighLogic.LoadedSceneIsEditor && (_firstUpdate || EditorLogic.SortedShipList[0] == this.part || this.part.parent != null))
             {
+                _firstUpdate = false;
                 if (sizeNeedsUpdating)
                 {
                     float m;
@@ -441,6 +440,9 @@ namespace NRAP
 
                 if (!this.initiated)
                 {
+
+                    SetDefaults();
+
                     this.initiated = true;
                     this.mass = this.part.mass.ToString();
 
@@ -453,22 +455,22 @@ namespace NRAP
                             this.baseDiameter = MAX_SIZE;
 
                     }
-#if true
+
                     if (this.part.FindAttachNode("top") != null) { this.top = this.part.FindAttachNode("top").originalPosition.y; }
-#endif
                     if (this.part.FindAttachNode("bottom") != null) { this.bottom = this.part.FindAttachNode("bottom").originalPosition.y; }
-#if true
+
                     this.currentTop = this.top;
-#endif
+
                     this.currentBottom = this.bottom;
                     if (this.minMass <= 0) { this.minMass = 0.01f; }
                 }
                 this.window = new Rect(200, 200, 300, 200);
                 this.drag = new Rect(0, 0, 300, 30);
-#if true
+
                 if (this.part.FindAttachNode("top") != null) { this.part.FindAttachNode("top").originalPosition.y = this.currentTop; }
-#endif
                 if (this.part.FindAttachNode("bottom") != null) { this.part.FindAttachNode("bottom").originalPosition.y = this.currentBottom; }
+
+
             }
             this.baseHeight = this.part.transform.GetChild(0).localScale.y;
             this.baseRadial = this.part.transform.GetChild(0).localScale.x;

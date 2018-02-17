@@ -1,16 +1,11 @@
 Changelog
 
-1.5.2
+1.5.10
+	Fixed display when NRAP is added as part of a subassembly
+	Fixed default size when creating new part
+	Fixed dialog window initialization
 
-	Fixed issue where it was telling KSP that the size was changing every tick, which was causing issues in other mods which were reacting to the event
-	Fixed issue where clicking Apply wasn't updating the Totalmass display immediately, you needed to click it a 2nd time
-	Fixed issue where changing the fuel wasn't showing the change in mass unless you clicked the Apply button
-	Removed the CompatibilityChecker
-
-1.5.2.1
-	Added code to compile in the version info into the AssemblyVersion field
-	Pointed to new .version file 
-	Added deploy and buildRelease batch file
+	
 1.5.9
 	Added ModuleKerbNetAccess and ModuleDataTransmitter to both parts
 	Reordered Changelog, now newest first
@@ -44,13 +39,17 @@ Changelog
 	Fixed problem with loading part on saved ship loses width.
 	Changed NRAP to disallow it from being the root part
 
+1.5.2.1
+	Added code to compile in the version info into the AssemblyVersion field
+	Pointed to new .version file 
+	Added deploy and buildRelease batch file
 
+1.5.2
 
-
-
-
-
-
+	Fixed issue where it was telling KSP that the size was changing every tick, which was causing issues in other mods which were reacting to the event
+	Fixed issue where clicking Apply wasn't updating the Totalmass display immediately, you needed to click it a 2nd time
+	Fixed issue where changing the fuel wasn't showing the change in mass unless you clicked the Apply button
+	Removed the CompatibilityChecker
 
 
 
