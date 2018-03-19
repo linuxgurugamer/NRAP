@@ -1,5 +1,10 @@
 Changelog
 
+1.5.11
+	Updated for 1.4.1
+	Added support for the ClickThroughBlocker
+	Fixed error with inline NRAP, changing the height was causing the non-parent part to move 2x as far as the NRAP end
+
 1.5.10
 	Fixed display when NRAP is added as part of a subassembly
 	Fixed default size when creating new part

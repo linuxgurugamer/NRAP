@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using ClickThroughFix;
 
 /* NRAP Test Weights is licensed under CC-BY-SA. All Rights for the original mod and for attribution 
  * go to him, excepted for this code, which is the work of Christophe Savard (stupid_chris).*/
@@ -120,7 +121,8 @@ namespace NRAP
             float radialFactor = this.baseRadial * this.width;
             float heightFactor = this.baseHeight * this.height;
             //Transform root = this.part.transform.GetChild(0);
-            Transform root = this.part.partTransform.FindChild("model");
+            //Transform root = this.part.partTransform.FindChild("model");
+            Transform root = this.part.partTransform.Find("model");
             float originalX = root.localScale.x;
             float originalY = root.localScale.y;
             root.localScale = new Vector3(radialFactor, heightFactor, radialFactor);
@@ -171,7 +173,7 @@ namespace NRAP
                     topNode.position.y = this.top * this.height;
                     this.currentTop = topNode.position.y;
                     float topDifference = this.currentTop - originalTop;
-                    topNode.attachedPart.transform.Translate(0, -(bottomDifference - topDifference), 0, this.part.transform);
+                    topNode.attachedPart.transform.Translate(0, -(bottomDifference -  topDifference)/2, 0, this.part.transform);
                 }
             }
 
@@ -189,7 +191,7 @@ namespace NRAP
                     bottomNode.position.y = this.bottom * this.height;
                     this.currentBottom = bottomNode.position.y;
                     float bottomDifference = this.currentBottom - originalBottom;
-                    bottomNode.attachedPart.transform.Translate(0, -(topDifference - bottomDifference), 0, this.part.transform);
+                    bottomNode.attachedPart.transform.Translate(0, -(topDifference - bottomDifference)/2, 0, this.part.transform);
                 }
             }
 
@@ -394,7 +396,7 @@ namespace NRAP
             if (HighLogic.LoadedSceneIsEditor && this.visible)
             {
                 GUI.skin = HighLogic.Skin;
-                this.window = GUILayout.Window(this.id, this.window, Window, "NRAP Test Weight " + NRAPUtils.AssemblyVersion);
+                this.window = ClickThruBlocker.GUILayoutWindow(this.id, this.window, Window, "NRAP Test Weight " + NRAPUtils.AssemblyVersion);
             }
         }
         #endregion

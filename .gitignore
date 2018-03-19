@@ -113,3 +113,4 @@ UpgradeLog*.XML
 *.zip
 *.dll
 *.pdb
+.vs
