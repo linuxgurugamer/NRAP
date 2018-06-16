@@ -1,5 +1,8 @@
 Changelog
 
+1.5.11.1
+	Updated .version file for all of 1.4.x
+
 1.5.11
 	Updated for 1.4.1
 	Added support for the ClickThroughBlocker
