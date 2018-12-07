@@ -1,5 +1,9 @@
 Changelog
 
+1.5.11.3
+	Fixed bad attachRules in one part
+	Updated parts to enable full SAS
+
 1.5.11.2
 	Version bump for 1.5 rebuild
 
