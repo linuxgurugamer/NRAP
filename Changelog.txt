@@ -1,5 +1,8 @@
 Changelog
 
+1.5.11.5
+	Fixed cost of the inline part
+
 1.5.11.3
 	Fixed bad attachRules in one part
 	Updated parts to enable full SAS

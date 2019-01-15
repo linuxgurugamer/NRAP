@@ -277,6 +277,8 @@ namespace NRAP
             GUILayout.Label("Dry mass (t):", NRAPUtils.CanParse(this.mass) && NRAPUtils.CheckRange(float.Parse(this.mass), this.minMass, this.maxMass) ? GUI.skin.label : NRAPUtils.RedLabel);
             GUILayout.FlexibleSpace();
             GUILayout.EndVertical();
+
+
             GUILayout.FlexibleSpace();
             GUILayout.BeginVertical();
             GUILayout.FlexibleSpace();
