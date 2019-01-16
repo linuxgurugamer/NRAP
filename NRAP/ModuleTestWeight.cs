@@ -69,7 +69,7 @@ namespace NRAP
 
         void SetDefaults()
         {
-            sizeNeedsUpdating = true;
+            sizeMassNeedsUpdating = true;
             this.deltaMass = 0;
             this.mass = this.part.partInfo.partPrefab.mass.ToString();
             this.currentMass = this.part.TotalMass();
@@ -97,7 +97,7 @@ namespace NRAP
         #endregion
 
         #region Part GUI
-        [KSPEvent(active = true, guiActive = false, guiActiveEditor = true, guiName = "Toggle window")]
+        [KSPEvent(active = true, guiActive = false, guiActiveEditor = true, guiName = "Toggle NRAP window")]
         public void GUIToggle()
         {
             CloseOpenedWindow();
@@ -259,7 +259,7 @@ namespace NRAP
             this.part.DragCubes.ResetCubeWeights();
         }
 
-        bool sizeNeedsUpdating = false;
+        bool sizeMassNeedsUpdating = false;
         //int oldSize;
         float oldHeight;
         float oldDiameter;
@@ -289,7 +289,7 @@ namespace NRAP
             if (GUILayout.Button("Apply", GUILayout.Width(60)))
             {
                 float m;
-                sizeNeedsUpdating = true;
+                sizeMassNeedsUpdating = true;
                 if (float.TryParse(this.mass, out m) && NRAPUtils.CheckRange(m, this.minMass, this.maxMass))
                 {
                     this.deltaMass = m - this.part.partInfo.partPrefab.mass;
@@ -299,8 +299,10 @@ namespace NRAP
             }
             GUILayout.EndHorizontal();
 
-            StringBuilder builder = new StringBuilder().AppendFormat("\nCurrent total mass: {0}t ({1}t dry - {2}t resources)\n", this.part.TotalMass(), this.part.mass, this.part.GetResourceMass());
-            builder.AppendFormat("Test weight cost: {0}f (total: {1}f)", GetModuleCost(0, 0), this.part.TotalCost());
+            StringBuilder builder = new StringBuilder().AppendFormat("\nTotal mass: {0}t ({1}t dry + {2}t resources)\n", this.part.TotalMass().ToString("F2"), this.part.mass.ToString("F2"), this.part.GetResourceMass().ToString("F2"));
+            builder.AppendFormat("\nWeight cost: {0}", GetModuleCost(0, 0).ToString("F2"));
+            builder.AppendFormat("\nPart dry cost: {0}", GetModuleDryCost(0, 0).ToString("F2"));
+            builder.AppendFormat("\nPart wet cost: {0}", this.part.TotalCost().ToString("F2"));
             GUILayout.Label(builder.ToString());
             GUILayout.Space(10);
 
@@ -330,7 +332,7 @@ namespace NRAP
             GUILayout.Space(10);
             //if (oldSize != this.size || oldHeight != this.height)
             if (oldDiameter != this.baseDiameter || oldHeight != this.height)
-                sizeNeedsUpdating = true;
+                sizeMassNeedsUpdating = true;
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Reset to defaults", GUILayout.Width(150)))
                 SetDefaults();
@@ -339,6 +341,22 @@ namespace NRAP
             GUILayout.EndHorizontal();
             GUILayout.EndVertical();
             GUI.DragWindow();
+        }
+
+        public float GetModuleDryCost(float defaultCost, ModifierStagingSituation sit)
+        {
+            //float fuelCost = 0f;
+            AvailablePart partInfo = part.partInfo;
+            float dryCost = partInfo.cost + part.GetModuleCosts(partInfo.cost, ModifierStagingSituation.CURRENT);
+            for (int i = part.Resources.Count - 1; i >= 0; i--)
+            {
+                PartResource partResource = part.Resources[i];
+                PartResourceDefinition info = partResource.info;
+                dryCost -= info.unitCost * (float)partResource.maxAmount;
+                //fuelCost += info.unitCost * (float)partResource.amount;
+            }
+
+            return dryCost;
         }
 
         public float GetModuleCost(float defaultCost, ModifierStagingSituation sit) => this.part.mass * this.weightCost;
@@ -375,7 +393,7 @@ namespace NRAP
             if (HighLogic.LoadedSceneIsEditor && (_firstUpdate || EditorLogic.SortedShipList[0] == this.part || this.part.parent != null))
             {
                 _firstUpdate = false;
-                if (sizeNeedsUpdating)
+                if (sizeMassNeedsUpdating)
                 {
                     float m;
                     if (float.TryParse(this.mass, out m) && NRAPUtils.CheckRange(m, this.minMass, this.maxMass))
@@ -385,10 +403,11 @@ namespace NRAP
                         //  GameEvents.onEditorShipModified.Fire(EditorLogic.fetch.ship);
                     }
                     UpdateSize();
-                    sizeNeedsUpdating = false;
+                    sizeMassNeedsUpdating = false;
                     GameEvents.onEditorShipModified.Fire(EditorLogic.fetch.ship);
                     EditorLogic.fetch.SetBackup();
                 }
+
                 this.currentMass = this.part.TotalMass();
             }
         }
@@ -481,7 +500,7 @@ namespace NRAP
             //this.width = GetSize(this.size) / 2.5f; //  this.baseDiameter;
             this.width = this.baseDiameter / 2.5f;
             this.currentMass = this.part.partInfo.partPrefab.mass + this.deltaMass;
-            sizeNeedsUpdating = true;
+            sizeMassNeedsUpdating = true;
             //   UpdateSize();
            if (HighLogic.LoadedSceneIsFlight) { UpdateSize(); }
         }

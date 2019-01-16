@@ -1,5 +1,11 @@
 Changelog
 
+1.5.12
+	Added Dry Cost of part to display
+	Fixed display of numbers to limit decimal places
+	Reorganized window a bit
+	Updated PAW entry display to make obvious to toggle NRAP window
+
 1.5.11.5
 	Fixed cost of the inline part
 
