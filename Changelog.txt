@@ -1,5 +1,9 @@
 Changelog
 
+1.5.13
+	Added optional MM patch to remove all functionality from the parts
+	other than the test weight functionality
+
 1.5.12
 	Added Dry Cost of part to display
 	Fixed display of numbers to limit decimal places
