@@ -25,15 +25,7 @@ namespace NRAP
         #region Constructors
         static NRAPUtils()
         {
-#if false
-            Version version = new Version(FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion);
-            if (version.Revision == 0)
-            {
-                if (version.Build == 0) { AssemblyVersion = "v" + version.ToString(2); }
-                else { AssemblyVersion = "v" + version.ToString(3); }
-            }
-            else { AssemblyVersion = "v" + version; }
-#endif
+
             RedLabel = new GUIStyle(HighLogic.Skin.label)
             {
                 normal = { textColor = XKCDColors.Red },

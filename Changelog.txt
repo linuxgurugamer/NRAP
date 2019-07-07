@@ -1,5 +1,9 @@
 Changelog
 
+1.5.14
+	Updated AssemblyVersion.tt
+	Version bump for 1.7.2
+
 1.5.13
 	Added optional MM patch to remove all functionality from the parts
 	other than the test weight functionality
