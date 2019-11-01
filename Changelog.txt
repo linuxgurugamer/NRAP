@@ -1,5 +1,9 @@
 Changelog
 
+1.6.0
+	Added InstallChecker
+	Updated for 1.8
+
 1.5.14
 	Updated AssemblyVersion.tt
 	Version bump for 1.7.2
