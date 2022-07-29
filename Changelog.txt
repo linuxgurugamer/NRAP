@@ -1,5 +1,8 @@
 Changelog
 
+1.6.0.2
+	Fixed CheckRange was not allowing the min range (had a > instead of >=)
+
 1.6.0.1
 	Renamed DLL for CKAN compatibility
 	Added AssemblyFileVersion

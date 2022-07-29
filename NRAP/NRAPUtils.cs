@@ -51,7 +51,7 @@ namespace NRAP
         /// <param name="f">Float to check</param>
         /// <param name="min">Minimum bound</param>
         /// <param name="max">Maximum bound</param>
-        public static bool CheckRange(float f, float min, float max) => f > min && f <= max;
+        public static bool CheckRange(float f, float min, float max) => f >= min && f <= max;
 #endregion
     }
 }
