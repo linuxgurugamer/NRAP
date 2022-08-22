@@ -53,6 +53,10 @@ namespace NRAP
         {
             GameEvents.onGUIEditorToolbarReady.Add(CorrectIcon);
         }
+        private void OnDestroy()
+        {
+            GameEvents.onGUIEditorToolbarReady.Remove(CorrectIcon);
+        }
         #endregion
     }
 }

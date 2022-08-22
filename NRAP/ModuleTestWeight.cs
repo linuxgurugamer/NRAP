@@ -453,7 +453,7 @@ namespace NRAP
         }
         public override void OnStart(StartState state)
         {
-            Log.setTitle("NRAP");
+            Log.InitLog("NRAP");
             //           part.attachRules.allowRoot = false;
             if ((!HighLogic.LoadedSceneIsFlight && !HighLogic.LoadedSceneIsEditor)) { return; }
             if (HighLogic.LoadedSceneIsEditor)

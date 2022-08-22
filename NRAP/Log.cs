@@ -2,11 +2,19 @@
 using System;
 using System.Diagnostics;
 //using UnityEngine;
+using KSP_Log;
 
 namespace NRAP
 {
     public static class Log
     {
+#if false
+        static string PREFIX = "";
+
+        public static void setTitle(string t)
+        {
+            PREFIX = t + ": ";
+        }
         public enum LEVEL
         {
             OFF = 0,
@@ -16,12 +24,6 @@ namespace NRAP
             DETAIL = 4,
             TRACE = 5
         };
-        static string PREFIX = "";
-
-        public static void setTitle(string t)
-        {
-            PREFIX = t + ": ";
-        }
 
         public static LEVEL level = LEVEL.INFO;
 
@@ -111,6 +113,28 @@ namespace NRAP
         {
             Log.Error("exception caught: " + e.GetType() + ": " + e.Message);
         }
+#else
+        static KSP_Log.Log log;
+        static public void InitLog(string str)
+        {
+            if (log == null)
+#if DEBUG
+                log = new KSP_Log.Log(str, KSP_Log.Log.LEVEL.INFO);
+#else
+                log = new KSP_Log.Log(str, KSP_Log.Log.LEVEL.ERROR);
+#endif
 
+        }
+        public static void Info(String msg)
+        {
+            log.Info(msg);
+        }
+        public static void Error(String msg)
+        {
+            log.Info(msg);
+        }
+
+
+#endif
     }
 }
