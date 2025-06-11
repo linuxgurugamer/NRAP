@@ -1,4 +1,5 @@
-﻿using System.Linq;
+using KSP.Localization;
+using System.Linq;
 using KSP.UI.Screens;
 using UnityEngine;
 using System.Collections.Generic;
@@ -25,7 +26,7 @@ namespace NRAP
                     var ab = PartCategorizer.Instance.filters[i];
                     if (ab != null && ab.button != null && ab.button.categoryName != null)
                     {
-                        if (ab.button.categoryName == "Filter by module")
+                        if (ab.button.categoryName == Localizer.Format("#LOC_NRAP_21"))
                         {
                             pcc = ab.subcategories;
                             break;
@@ -37,11 +38,11 @@ namespace NRAP
                 if (pcc != null)
                 {
 
-                    var b1 = pcc.Single(s => s.button != null && s.button.categoryName == "Test Weight");
+                    var b1 = pcc.Single(s => s.button != null && s.button.categoryName == Localizer.Format("#LOC_NRAP_22"));
 
                     if (b1 != null && b1.button != null)
                     {
-                        b1.button.SetIcon(PartCategorizer.Instance.iconLoader.GetIcon("R&D_node_icon_generic"));
+                        b1.button.SetIcon(PartCategorizer.Instance.iconLoader.GetIcon(Localizer.Format("#LOC_NRAP_23")));
                     }
                 }
             }

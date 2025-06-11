@@ -1,6 +1,6 @@
 {
   "NAME": "NRAP",
-  "URL": "http://ksp.spacetux.net/avc/NRAP",
+  "URL": "https://raw.githubusercontent.com/linuxgurugamer/NRAP/refs/heads/master/NRAP.version",
   "DOWNLOAD": "https://github.com/linuxgurugamer/NRAP/releases",
   "GITHUB": {
     "USERNAME": "linuxgurugamer",
@@ -9,8 +9,8 @@
   "VERSION": {
     "MAJOR": 1,
     "MINOR": 6,
-    "PATCH": 0,
-    "BUILD": 3
+    "PATCH": 1,
+    "BUILD": 0
   },
   "KSP_VERSION": {
     "MAJOR": 1,
@@ -21,5 +21,10 @@
     "MAJOR": 1,
     "MINOR": 9,
     "PATCH": 0
+  },
+  "KSP_VERSION_MAX": {
+    "MAJOR": 1,
+    "MINOR": 12,
+    "PATCH": 99
   }
 }

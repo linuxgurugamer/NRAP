@@ -1,4 +1,5 @@
-﻿using System;
+using KSP.Localization;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -115,14 +116,14 @@ namespace NRAP
         {
             AttachNode bottomNode;
             AttachNode topNode;
-            bool hasTopNode = this.part.TryGetAttachNodeById("top", out topNode);
-            bool hasBottomNode = this.part.TryGetAttachNodeById("bottom", out bottomNode);
+            bool hasTopNode = this.part.TryGetAttachNodeById(Localizer.Format("#LOC_NRAP_1"), out topNode);
+            bool hasBottomNode = this.part.TryGetAttachNodeById(Localizer.Format("#LOC_NRAP_2"), out bottomNode);
 
             float radialFactor = this.baseRadial * this.width;
             float heightFactor = this.baseHeight * this.height;
             //Transform root = this.part.transform.GetChild(0);
             //Transform root = this.part.partTransform.FindChild("model");
-            Transform root = this.part.partTransform.Find("model");
+            Transform root = this.part.partTransform.Find(Localizer.Format("#LOC_NRAP_3"));
             float originalX = root.localScale.x;
             float originalY = root.localScale.y;
             root.localScale = new Vector3(radialFactor, heightFactor, radialFactor);
@@ -274,7 +275,7 @@ namespace NRAP
             GUILayout.BeginHorizontal();
             GUILayout.BeginVertical();
             GUILayout.FlexibleSpace();
-            GUILayout.Label("Dry mass (t):", NRAPUtils.CanParse(this.mass) && NRAPUtils.CheckRange(float.Parse(this.mass), this.minMass, this.maxMass) ? GUI.skin.label : NRAPUtils.RedLabel);
+            GUILayout.Label(Localizer.Format("#LOC_NRAP_4"), NRAPUtils.CanParse(this.mass) && NRAPUtils.CheckRange(float.Parse(this.mass), this.minMass, this.maxMass) ? GUI.skin.label : NRAPUtils.RedLabel);
             GUILayout.FlexibleSpace();
             GUILayout.EndVertical();
 
@@ -286,7 +287,7 @@ namespace NRAP
             GUILayout.FlexibleSpace();
             GUILayout.EndVertical();
 
-            if (GUILayout.Button("Apply", GUILayout.Width(60)))
+            if (GUILayout.Button(Localizer.Format("#LOC_NRAP_5"), GUILayout.Width(60)))
             {
                 float m;
                 sizeMassNeedsUpdating = true;
@@ -299,10 +300,10 @@ namespace NRAP
             }
             GUILayout.EndHorizontal();
 
-            StringBuilder builder = new StringBuilder().AppendFormat("\nTotal mass: {0}t ({1}t dry + {2}t resources)\n", this.part.TotalMass().ToString("F2"), this.part.mass.ToString("F2"), this.part.GetResourceMass().ToString("F2"));
-            builder.AppendFormat("\nWeight cost: {0}", GetModuleCost(0, 0).ToString("F2"));
-            builder.AppendFormat("\nPart dry cost: {0}", GetModuleDryCost(0, 0).ToString("F2"));
-            builder.AppendFormat("\nPart wet cost: {0}", this.part.TotalCost().ToString("F2"));
+            StringBuilder builder = new StringBuilder().AppendFormat(Localizer.Format("#LOC_NRAP_6"), this.part.TotalMass().ToString("F2"), this.part.mass.ToString("F2"), this.part.GetResourceMass().ToString("F2"));
+            builder.AppendFormat(Localizer.Format("#LOC_NRAP_7"), GetModuleCost(0, 0).ToString("F2"));
+            builder.AppendFormat(Localizer.Format("#LOC_NRAP_8"), GetModuleDryCost(0, 0).ToString("F2"));
+            builder.AppendFormat(Localizer.Format("#LOC_NRAP_9"), this.part.TotalCost().ToString("F2"));
             GUILayout.Label(builder.ToString());
             GUILayout.Space(10);
 
@@ -312,7 +313,7 @@ namespace NRAP
             oldDiameter = this.baseDiameter;
 
             //this.baseDiameter = GetSize(this.size);
-            snapDiameter = GUILayout.Toggle(snapDiameter, "Snap diameter to predefined sizes");
+            snapDiameter = GUILayout.Toggle(snapDiameter, Localizer.Format("#LOC_NRAP_10"));
             GUILayout.Label($"Diameter (m):  {this.baseDiameter}");
             if (snapDiameter)
             {
@@ -334,10 +335,10 @@ namespace NRAP
             if (oldDiameter != this.baseDiameter || oldHeight != this.height)
                 sizeMassNeedsUpdating = true;
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Reset to defaults", GUILayout.Width(150)))
+            if (GUILayout.Button(Localizer.Format("#LOC_NRAP_11"), GUILayout.Width(150)))
                 SetDefaults();
 
-            if (GUILayout.Button("Close", GUILayout.Width(150))) { this.visible = false; }
+            if (GUILayout.Button(Localizer.Format("#LOC_NRAP_12"), GUILayout.Width(150))) { this.visible = false; }
             GUILayout.EndHorizontal();
             GUILayout.EndVertical();
             GUI.DragWindow();
@@ -417,7 +418,7 @@ namespace NRAP
             if (HighLogic.LoadedSceneIsEditor && this.visible)
             {
                 GUI.skin = HighLogic.Skin;
-                this.window = ClickThruBlocker.GUILayoutWindow(this.id, this.window, Window, "NRAP Test Weight " + NRAPUtils.AssemblyVersion);
+                this.window = ClickThruBlocker.GUILayoutWindow(this.id, this.window, Window, Localizer.Format("#LOC_NRAP_13") + NRAPUtils.AssemblyVersion);
             }
         }
         #endregion
@@ -453,7 +454,7 @@ namespace NRAP
         }
         public override void OnStart(StartState state)
         {
-            Log.InitLog("NRAP");
+            Log.InitLog(Localizer.Format("#LOC_NRAP_14"));
             //           part.attachRules.allowRoot = false;
             if ((!HighLogic.LoadedSceneIsFlight && !HighLogic.LoadedSceneIsEditor)) { return; }
             if (HighLogic.LoadedSceneIsEditor)
@@ -479,8 +480,8 @@ namespace NRAP
 
                     }
 
-                    if (this.part.FindAttachNode("top") != null) { this.top = this.part.FindAttachNode("top").originalPosition.y; }
-                    if (this.part.FindAttachNode("bottom") != null) { this.bottom = this.part.FindAttachNode("bottom").originalPosition.y; }
+                    if (this.part.FindAttachNode(Localizer.Format("#LOC_NRAP_1")) != null) { this.top = this.part.FindAttachNode(Localizer.Format("#LOC_NRAP_1")).originalPosition.y; }
+                    if (this.part.FindAttachNode(Localizer.Format("#LOC_NRAP_2")) != null) { this.bottom = this.part.FindAttachNode(Localizer.Format("#LOC_NRAP_2")).originalPosition.y; }
 
                     this.currentTop = this.top;
 
@@ -490,8 +491,8 @@ namespace NRAP
                 this.window = new Rect(200, 200, 300, 200);
                 this.drag = new Rect(0, 0, 300, 30);
 
-                if (this.part.FindAttachNode("top") != null) { this.part.FindAttachNode("top").originalPosition.y = this.currentTop; }
-                if (this.part.FindAttachNode("bottom") != null) { this.part.FindAttachNode("bottom").originalPosition.y = this.currentBottom; }
+                if (this.part.FindAttachNode(Localizer.Format("#LOC_NRAP_1")) != null) { this.part.FindAttachNode(Localizer.Format("#LOC_NRAP_1")).originalPosition.y = this.currentTop; }
+                if (this.part.FindAttachNode(Localizer.Format("#LOC_NRAP_2")) != null) { this.part.FindAttachNode(Localizer.Format("#LOC_NRAP_2")).originalPosition.y = this.currentBottom; }
 
 
             }
@@ -510,12 +511,12 @@ namespace NRAP
 
 
             StringBuilder builder = new StringBuilder();
-            builder.AppendFormat("Mass range: {0} - {1}t\n", this.maxMass, this.minMass);
-            builder.AppendFormat("Height multiplier range: {0} - {1}\n", this.minHeight, this.maxHeight);
-            builder.AppendFormat("Base diameter: {0}m\n", this.baseDiameter);
+            builder.AppendFormat(Localizer.Format("#LOC_NRAP_15"), this.maxMass, this.minMass);
+            builder.AppendFormat(Localizer.Format("#LOC_NRAP_16"), this.minHeight, this.maxHeight);
+            builder.AppendFormat(Localizer.Format("#LOC_NRAP_17"), this.baseDiameter);
             //builder.Append("Base diameter range: 0.625m, 1.25m, 2.5m, 3.75m, 5m");
 
-            builder.Append("Base diameter range: " + MIN_SIZE.ToString() + "m - " + MAX_SIZE.ToString() + "m ");
+            builder.Append(Localizer.Format("#LOC_NRAP_18") + MIN_SIZE.ToString() + Localizer.Format("#LOC_NRAP_19") + MAX_SIZE.ToString() + Localizer.Format("#LOC_NRAP_20"));
 
             return builder.ToString();
         }
