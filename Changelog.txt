@@ -1,5 +1,8 @@
 Changelog
 
+1.6.1.1
+	Fixed localization errors where format strings were put into the localization string; the Localizer.Format can't deal with that
+
 1.6.1
 	Updated version file to use github for new version info
 	Localization done

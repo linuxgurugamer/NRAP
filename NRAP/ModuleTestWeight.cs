@@ -300,10 +300,13 @@ namespace NRAP
             }
             GUILayout.EndHorizontal();
 
-            StringBuilder builder = new StringBuilder().AppendFormat(Localizer.Format("#LOC_NRAP_6"), this.part.TotalMass().ToString("F2"), this.part.mass.ToString("F2"), this.part.GetResourceMass().ToString("F2"));
-            builder.AppendFormat(Localizer.Format("#LOC_NRAP_7"), GetModuleCost(0, 0).ToString("F2"));
-            builder.AppendFormat(Localizer.Format("#LOC_NRAP_8"), GetModuleDryCost(0, 0).ToString("F2"));
-            builder.AppendFormat(Localizer.Format("#LOC_NRAP_9"), this.part.TotalCost().ToString("F2"));
+            //           #LOC_NRAP_6 = \nTotal mass: {0}t ({1}t dry + {2}t resources)\n
+
+            string formatstr = "\n" + Localizer.Format("LOC_NRAP_6a") + ": {0}t ({1}t " + Localizer.Format("LOC_NRAP_6b") + "{2}t " + Localizer.Format("LOC_NRAP_6c") + ")\n";
+            StringBuilder builder = new StringBuilder().AppendFormat(formatstr, this.part.TotalMass().ToString("F2"), this.part.mass.ToString("F2"), this.part.GetResourceMass().ToString("F2"));
+            builder.AppendFormat(Localizer.Format("#LOC_NRAP_7") + " {0}", GetModuleCost(0, 0).ToString("F2"));
+            builder.AppendFormat(Localizer.Format("#LOC_NRAP_8")+ " {0}", GetModuleDryCost(0, 0).ToString("F2"));
+            builder.AppendFormat(Localizer.Format("#LOC_NRAP_9") + " {0}", this.part.TotalCost().ToString("F2"));
             GUILayout.Label(builder.ToString());
             GUILayout.Space(10);
 
@@ -511,9 +514,9 @@ namespace NRAP
 
 
             StringBuilder builder = new StringBuilder();
-            builder.AppendFormat(Localizer.Format("#LOC_NRAP_15"), this.maxMass, this.minMass);
-            builder.AppendFormat(Localizer.Format("#LOC_NRAP_16"), this.minHeight, this.maxHeight);
-            builder.AppendFormat(Localizer.Format("#LOC_NRAP_17"), this.baseDiameter);
+            builder.AppendFormat(Localizer.Format("#LOC_NRAP_15")+ ": {0} - {1}t\n", this.maxMass, this.minMass);
+            builder.AppendFormat(Localizer.Format("#LOC_NRAP_16") + ": {0} - {1}t\n", this.minHeight, this.maxHeight);
+            builder.AppendFormat(Localizer.Format("#LOC_NRAP_17") + ": {0}m\n", this.baseDiameter);
             //builder.Append("Base diameter range: 0.625m, 1.25m, 2.5m, 3.75m, 5m");
 
             builder.Append(Localizer.Format("#LOC_NRAP_18") + MIN_SIZE.ToString() + Localizer.Format("#LOC_NRAP_19") + MAX_SIZE.ToString() + Localizer.Format("#LOC_NRAP_20"));
